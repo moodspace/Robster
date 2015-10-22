@@ -136,7 +136,7 @@ def fetchCoursePage(subject, code, term, year)
       credits = section.xpath('li[@class = "credit-info"]')
       creditsHash = Hash.new { |hash, key| hash[key] = '' }
       if not credits.children.empty?
-        creditsHash['credits'] = credits.xpath('p/span[@class = "credits"]/strong').text.gsub(/\D/, '')
+        creditsHash['credits'] = credits.xpath('p/span[@class = "credits"]/strong').text.gsub(/[^\d\.-]/, '')
       end
       sectionHash['credits'] = creditsHash
 
@@ -148,6 +148,6 @@ def fetchCoursePage(subject, code, term, year)
   return { 'title' => courseTitle.strip, 'description' => courseDescr.strip, 'groups' => courseGroupsArray}
 end
 
-# puts fetchCoursePage('CS', '2110', 'FA', '15')
+# fetchCoursePage('VTMED', '6798', 'SP', '16')
 
 fetchRoster(Terms::WI, 16, Terms::SP, 16)
