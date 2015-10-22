@@ -114,18 +114,31 @@ def fetchCoursePage(subject, code, term, year)
 
       meta = section.xpath('li[@class = "class-numbers"]/p')
       metaHash = Hash.new { |hash, key| hash[key] = '' }
-      metaHash['number'] = meta.children[0].text.strip
+      metaHash['number'] = meta.children[0].text.gsub(/\D/, '')
       metaHash['type'] = meta.children[2].text
-      metaHash['index'] = meta.children[3].text.strip
+      metaHash['index'] = meta.children[3].text.gsub(/\D/, '')
       sectionHash['meta'] = metaHash
 
       meeting = section.xpath('li[@class = "meeting-pattern"]/ul')
       meetingHash = Hash.new { |hash, key| hash[key] = '' }
-      meetingHash['pattern'] = meeting.children[0].xpath('span/span/span').text
-      meetingHash['time'] = meeting.children[0].xpath('span/time').text
-      meetingHash['location'] = meeting.children[0].xpath('a[@class = "facility-search"]').text
-      meetingHash['organizers'] = meeting.children[2].xpath('p/span').map { |e| e.text }
+      if not meeting.children.empty?
+        meetingHash['pattern'] = meeting.children[0].xpath('span/span/span').text
+        time = meeting.children[0].xpath('span/time').text
+        meetingHash['timeStart'] = time.split(' - ')[0]
+        meetingHash['timeEnd'] = time.split(' - ')[1]
+        meetingHash['location'] = meeting.children[0].xpath('a[@class = "facility-search"]').text
+        if meeting.children.size > 2
+          meetingHash['organizers'] = meeting.children[2].xpath('p/span').map { |e| e.text }
+        end
+      end
       sectionHash['meeting'] = meetingHash
+
+      credits = section.xpath('li[@class = "credit-info"]')
+      creditsHash = Hash.new { |hash, key| hash[key] = '' }
+      if not credits.children.empty?
+        creditsHash['credits'] = credits.xpath('p/span[@class = "credits"]/strong').text.gsub(/\D/, '')
+      end
+      sectionHash['credits'] = creditsHash
 
       courseSectionsArray << sectionHash
     end
@@ -135,4 +148,6 @@ def fetchCoursePage(subject, code, term, year)
   return { 'title' => courseTitle.strip, 'description' => courseDescr.strip, 'groups' => courseGroupsArray}
 end
 
-fetchRoster(Terms::FA, 14, Terms::SP, 16)
+# puts fetchCoursePage('CS', '2110', 'FA', '15')
+
+fetchRoster(Terms::WI, 16, Terms::SP, 16)
