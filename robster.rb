@@ -114,7 +114,7 @@ def fetchCoursePage(subject, code, term, year)
 
       meta = section.xpath('li[@class = "class-numbers"]/p')
       metaHash = Hash.new { |hash, key| hash[key] = '' }
-      metaHash['number'] = meta.children[0].text
+      metaHash['number'] = meta.children[0].text.strip
       metaHash['type'] = meta.children[2].text
       metaHash['index'] = meta.children[3].text.strip
       sectionHash['meta'] = metaHash
