@@ -150,4 +150,4 @@ end
 
 # fetchCoursePage('VTMED', '6798', 'SP', '16')
 
-fetchRoster(Terms::WI, 16, Terms::SP, 16)
+fetchRoster(Terms::FA, 14, Terms::FA, 15)
