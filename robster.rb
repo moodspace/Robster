@@ -52,19 +52,19 @@ end
 
 def fetchTerm(term, year)
   subjects = fetchTermPage(term, year)
-  subjectsHash = Hash.new { |hash, key| hash[key] = Hash.new }
+  subjectsArray = Array.new
   subjects.each do |subject|
     courses = fetchSubjectPage(subject, term, year)[1]
-    coursesHash = Hash.new { |hash, key| hash[key] = Array.new }
+    coursesArray = Array.new
     courses.each do |code|
-      coursesHash[code] = fetchCoursePage(subject, code, term, year)
+      coursesArray.push(fetchCoursePage(subject, code, term, year))
     end
-    subjectsHash[subject] = coursesHash
+    subjectsArray.push({'subject' => subject, 'courses' => coursesArray})
   end
 
   # output as json
   File.open(term + year + '.json','w') do |f|
-    f.write(subjectsHash.to_json)
+    f.write(subjectsArray.to_json)
   end
 end
 
@@ -114,9 +114,9 @@ def fetchCoursePage(subject, code, term, year)
 
       meta = section.xpath('li[@class = "class-numbers"]/p')
       metaHash = Hash.new { |hash, key| hash[key] = '' }
-      metaHash['number'] = meta.children[0].text.gsub(/\D/, '')
+      metaHash['number'] = meta.children[0].text.gsub(/\D/, '').to_i
       metaHash['type'] = meta.children[2].text
-      metaHash['index'] = meta.children[3].text.gsub(/\D/, '')
+      metaHash['index'] = meta.children[3].text.gsub(/\D/, '').to_i
       sectionHash['meta'] = metaHash
 
       meeting = section.xpath('li[@class = "meeting-pattern"]/ul')
@@ -145,9 +145,9 @@ def fetchCoursePage(subject, code, term, year)
     courseGroupsArray << courseSectionsArray
   end
 
-  return { 'title' => courseTitle.strip, 'description' => courseDescr.strip, 'groups' => courseGroupsArray}
+  return { 'code' => code.to_i, 'title' => courseTitle.strip, 'description' => courseDescr.strip, 'groups' => courseGroupsArray}
 end
 
 # fetchCoursePage('VTMED', '6798', 'SP', '16')
 
-fetchRoster(Terms::FA, 14, Terms::FA, 15)
+fetchRoster(Terms::FA, 14, Terms::SP, 16)
