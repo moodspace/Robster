@@ -52,19 +52,19 @@ end
 
 def fetchTerm(term, year)
   subjects = fetchTermPage(term, year)
-  subjectsArray = Array.new
+  coursesArrayOfTerm = Array.new
   subjects.each do |subject|
     courses = fetchSubjectPage(subject, term, year)[1]
     coursesArray = Array.new
     courses.each do |code|
       coursesArray.push(fetchCoursePage(subject, code, term, year))
     end
-    subjectsArray.push({'subject' => subject, 'courses' => coursesArray})
+    coursesArrayOfTerm += coursesArray
   end
 
   # output as json
   File.open(term + year + '.json','w') do |f|
-    f.write(subjectsArray.to_json)
+    f.write(coursesArrayOfTerm.to_json)
   end
 end
 
@@ -145,9 +145,9 @@ def fetchCoursePage(subject, code, term, year)
     courseGroupsArray << courseSectionsArray
   end
 
-  return { 'code' => code.to_i, 'title' => courseTitle.strip, 'description' => courseDescr.strip, 'groups' => courseGroupsArray}
+  return { 'subject' => subject, 'code' => code.to_i, 'title' => courseTitle.strip, 'description' => courseDescr.strip, 'groups' => courseGroupsArray}
 end
 
 # fetchCoursePage('VTMED', '6798', 'SP', '16')
 
-fetchRoster(Terms::FA, 14, Terms::SP, 16)
+fetchRoster(Terms::FA, 14, Terms::SU, 16)
