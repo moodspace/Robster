@@ -105,7 +105,7 @@ def fetchCoursePage(subject, code, term, year)
   node = doc.xpath('//div[@class = "node"]')[1]
   courseTitle = node.xpath('h3/div[@class = "title-coursedescr"]/a').text
   courseDescr = node.xpath('p[@class = "catalog-descr"]').text
-  courseGroups = node.xpath('div[@class = "sections alwaysdisplay"]/div[@class = "group heavy-left"]')
+  courseGroups = node.xpath('div[@class = "sections"]/div[@class = "group heavy-left"]')
   courseGroupsArray = []
   courseGroups.each do |group|
     courseSectionsArray = []
